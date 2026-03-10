@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoShop - Jualan Online Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Konfigurasi Tailwind Premium -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#F97316',
+                        accent: '#8B5CF6',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        neutral: {
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            700: '#374151',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+                        'hard': '0 20px 30px -10px rgba(0, 0, 0, 0.1)',
+                        'glow': '0 0 15px rgba(37, 99, 235, 0.25)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .text-balance { text-wrap: balance; }
+            .backdrop-blur-xl { backdrop-filter: blur(24px); }
+            .mask-gradient { mask-image: linear-gradient(to bottom, black 85%, transparent 100%); }
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        }
+
+        /* Komponen Premium */
+        .product-card {
+            @apply bg-white rounded-2xl overflow-hidden shadow-soft transition-all duration-500 hover:shadow-hard hover:-translate-y-2 hover:border-primary/20 border border-neutral-100;
+        }
+        .btn-primary {
+            @apply bg-primary text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:bg-primary/90 hover:shadow-glow active:scale-95;
+        }
+        .btn-secondary {
+            @apply bg-secondary text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:bg-secondary/90 hover:shadow-glow active:scale-95;
+        }
+        .btn-outline {
+            @apply border border-primary text-primary px-5 py-2.5 rounded-xl font-medium transition-all hover:bg-primary/5 active:scale-95;
+        }
+        .section-title {
+            @apply text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-dark text-center mb-2;
+        }
+        .section-subtitle {
+            @apply text-neutral-700 text-center max-w-2xl mx-auto mb-12;
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-light text-dark antialiased">
+    <!-- Navbar Premium (Sticky + Transisi) -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-500 py-4 bg-transparent">
+        <div class="container mx-auto px-4 md:px-8 flex justify-between items-center">
+            <!-- Logo Premium -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12">
+                    <i class="fa fa-shopping-basket text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">NeoShop</span>
+            </a>
+
+            <!-- Menu Desktop -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#" class="font-medium text-white hover:text-primary transition-colors">Beranda</a>
+                <a href="#produk" class="font-medium text-white hover:text-primary transition-colors">Produk</a>
+                <a href="#kategori" class="font-medium text-white hover:text-primary transition-colors">Kategori</a>
+                <a href="#testimoni" class="font-medium text-white hover:text-primary transition-colors">Testimoni</a>
+                <a href="#tentang" class="font-medium text-white hover:text-primary transition-colors">Tentang Kami</a>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-5">
+                <button class="text-white hover:text-primary transition-colors">
+                    <i class="fa fa-search text-xl"></i>
+                </button>
+                <div class="relative group" id="cart-trigger">
+                    <button class="text-white hover:text-primary transition-colors relative">
+                        <i class="fa fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">0</span>
+                    </button>
+                    <!-- Mini Cart Dropdown -->
+                    <div class="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-hard p-4 hidden group-hover:block animate-fade-in z-10">
+                        <h4 class="font-semibold mb-3">Keranjang Belanja</h4>
+                        <div id="mini-cart-items" class="max-h-60 overflow-y-auto scrollbar-hide">
+                            <p class="text-neutral-700 text-center py-4">Keranjang kosong</p>
+                        </div>
+                        <div class="mt-4 border-t pt-3 flex justify-between items-center">
+                            <span class="font-bold">Total:</span>
+                            <span id="mini-cart-total" class="font-bold text-primary">Rp 0</span>
+                        </div>
+                        <div class="mt-3 flex gap-2">
+                            <button class="btn-outline w-full" id="view-cart-btn">Lihat Keranjang</button>
+                            <button class="btn-primary w-full">Bayar Sekarang</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="hidden md:flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl hover:bg-white/20 transition-all">
+                    <i class="fa fa-user"></i>
+                    <span class="font-medium">Masuk/Daftar</span>
+                </button>
+                <!-- Menu Mobile Trigger -->
+                <button class="md:hidden text-white text-xl" id="mobile-menu-trigger">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-dark/95 backdrop-blur-xl text-white">
+            <div class="container mx-auto px-4 py-6 flex flex-col gap-4">
+                <a href="#" class="font-medium py-2 border-b border-neutral-800">Beranda</a>
+                <a href="#produk" class="font-medium py-2 border-b border-neutral-800">Produk</a>
+                <a href="#kategori" class="font-medium py-2 border-b border-neutral-800">Kategori</a>
+                <a href="#testimoni" class="font-medium py-2 border-b border-neutral-800">Testimoni</a>
+                <a href="#tentang" class="font-medium py-2 border-b border-neutral-800">Tentang Kami</a>
+                <button class="btn-primary mt-2">Masuk/Daftar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section Premium (Parallax + Gradient) -->
+    <section class="relative h-[100vh] min-h-[600px] flex items-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-primary/60 z-10"></div>
+        <div class="absolute inset-0 bg-[url('https://picsum.photos/seed/neoshop-hero/1920/1080')] bg-cover bg-center bg-fixed z-0"></div>
+        <div class="container mx-auto px-4 md:px-8 relative z-20">
+            <div class="max-w-3xl animate-slide-up">
+                <span class="inline-block px-4 py-1 bg-secondary/20 backdrop-blur-sm text-secondary rounded-full font-medium mb-4">Promo Bulanan</span>
+                <h1 class="text-[clamp(2.5rem,6vw,4rem)] font-extrabold text-white leading-tight mb-4">
+                    Belanja Cepat, <br>
+                    <span class="text-secondary">Harga Lebih Hemat</span>
+                </h1>
+                <p class="text-white/90 text-lg md:text-xl mb-8 max-w-xl text-balance">
+                    Ribuan produk premium dengan kualitas terjamin, pengiriman cepat ke seluruh Indonesia, dan garansi uang kembali jika tidak puas.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button class="btn-primary text-lg">Jelajahi Produk</button>
+                    <button class="btn-outline text-white border-white text-lg hover:bg-white/10">Lihat Promo</button>
+                </div>
+
+                <!-- Stats Hero -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="text-3xl font-bold text-white mb-1">1000+</div>
+                        <div class="text-white/80 text-sm">Produk Berkualitas</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="text-3xl font-bold text-white mb-1">50K+</div>
+                        <div class="text-white/80 text-sm">Pelanggan Puas</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="text-3xl font-bold text-white mb-1">25+</div>
+                        <div class="text-white/80 text-sm">Kategori Produk</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="text-3xl font-bold text-white mb-1">100%</div>
+                        <div class="text-white/80 text-sm">Keamanan Transaksi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wave Divider -->
+        <div class="absolute bottom-0 left-0 w-full z-20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" class="w-full h-auto fill-light">
+                <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Kategori Premium Section -->
+    <section id="kategori" class="py-16 bg-light">
+        <div class="container mx-auto px-4 md:px-8">
+            <h2 class="section-title">Kategori Unggulan</h2>
+            <p class="section-subtitle">Pilih kategori produk yang kamu butuhkan dengan mudah, semua tersedia dalam kualitas terbaik.</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                <button class="category-btn group relative overflow-hidden rounded-2xl h-40 flex items-end p-5 bg-gradient-to-t from-dark to-transparent transition-all duration-300 hover:scale-105" data-category="semua">
+                    <img src="https://picsum.photos/seed/cat-all/300/400" alt="Semua Kategori" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="relative z-10">
+                        <i class="fa fa-th-large text-white text-2xl mb-2"></i>
+                        <span class="text-white font-semibold text-lg">Semua Produk</span>
+                    </div>
+                </button>
+                <button class="category-btn group relative overflow-hidden rounded-2xl h-40 flex items-end p-5 bg-gradient-to-t from-dark to-transparent transition-all duration-300 hover:scale-105" data-category="elektronik">
+                    <img src="https://picsum.photos/seed/cat-electro/300/400" alt
